@@ -3,6 +3,7 @@
 import numpy as np
 import yfinance as yf
 from sklearn.linear_model import Lasso
+from sklearn.metrics import mean_squared_error
 import random
 import matplotlib.pyplot as plt
 
@@ -40,12 +41,26 @@ for _ in range(num_bootstrap):
 bootstrap_X = np.array(bootstrap_X)
 bootstrap_Y = np.array(bootstrap_Y)
 
-# Fit data into Lasso regression model
-alpha = 0.01  # Regularization strength
-model = Lasso(alpha=alpha)
+# Grid search for alpha
+alphas = np.logspace(-4, 4, 100)
+best_alpha = None
+min_mse = float('inf')
+
+for alpha in alphas:
+    model = Lasso(alpha=alpha)
+    model.fit(bootstrap_X, bootstrap_Y)
+    Y_pred = model.predict(X_test)
+    mse = mean_squared_error(Y_test, Y_pred)
+    if mse < min_mse:
+        min_mse = mse
+        best_alpha = alpha
+
+# Fit data into Lasso regression model with the best alpha
+model = Lasso(alpha=best_alpha)
 model.fit(bootstrap_X, bootstrap_Y)
 
 # Print the coefficients
+print("Best Alpha:", best_alpha)
 print("Coefficients:", model.coef_)
 print("Intercept:", model.intercept_)
 
