@@ -3,6 +3,7 @@
 import numpy as np
 import yfinance as yf
 from sklearn.linear_model import Lasso
+from sklearn.model_selection import GridSearchCV
 import random
 import matplotlib.pyplot as plt
 
@@ -43,8 +44,19 @@ num_bootstrap = 6
 bootstrap_X = np.array(bootstrap_X)
 bootstrap_Y = np.array(bootstrap_Y)
 
-# Fit data into Lasso regression model
-model = Lasso(alpha=0.1)  # You need to specify the value of alpha here
+# Define a range of alpha values to search
+alphas = np.logspace(-4, 4, 9)
+
+# Perform grid search to find the optimal alpha
+lasso = Lasso()
+grid_search = GridSearchCV(estimator=lasso, param_grid=dict(alpha=alphas), cv=5)
+grid_search.fit(bootstrap_X, bootstrap_Y)
+
+# Get the best alpha value
+best_alpha = grid_search.best_estimator_.alpha
+
+# Fit data into Lasso regression model with the optimal alpha
+model = Lasso(alpha=best_alpha)
 model.fit(bootstrap_X, bootstrap_Y)
 
 # Print the coefficients
