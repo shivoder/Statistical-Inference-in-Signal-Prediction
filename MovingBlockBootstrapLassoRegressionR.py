@@ -1,4 +1,4 @@
-# moving block bootstrapping lasso regression
+# Moving block bootstrapping lasso regression
 
 import numpy as np
 import yfinance as yf
