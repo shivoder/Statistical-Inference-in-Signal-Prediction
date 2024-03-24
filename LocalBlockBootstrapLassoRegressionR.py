@@ -1,4 +1,4 @@
-# local block lasso regression
+# Local block lasso regression
 
 import numpy as np
 import yfinance as yf
